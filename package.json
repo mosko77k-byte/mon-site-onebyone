@@ -1,0 +1,12 @@
+{
+  "name": "onebyone-paris",
+  "version": "1.0.0",
+  "description": "Boutique en ligne ONEBYONE Paris",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Static site - no build needed'"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  }
+}
