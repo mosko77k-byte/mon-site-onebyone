@@ -1,0 +1,650 @@
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080808;--bg2:#0f0f0f;--bg3:#141414;--bg4:#1a1a1a;
+  --border:#222;--border2:#2e2e2e;
+  --text:#f5f2ed;--text2:#888;--text3:#555;
+  --gold:#d4a843;--gold2:#f0c060;--gold3:#b8882a;
+  --neon:#b8ff57;--neon2:#9fe040;
+  --danger:#ff4d4d;--success:#4dff8f;
+  --font-display:'Space Grotesk',sans-serif;--font-body:'DM Sans',sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:14px;line-height:1.6;min-height:600px;overflow-x:hidden}
+button{cursor:pointer;font-family:var(--font-body);border:none;background:none;color:inherit}
+input,select,textarea{font-family:var(--font-body)}
+
+nav{background:var(--bg);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:50}
+.logo-main{font-family:var(--font-display);font-size:20px;font-weight:700;letter-spacing:0.06em;color:var(--gold)}
+.logo-sub{font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold3);margin-left:6px}
+.nav-links{display:flex;gap:1.5rem}
+.nav-link{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);cursor:pointer;transition:color .2s;padding:4px 0;border-bottom:1px solid transparent}
+.nav-link:hover,.nav-link.active{color:var(--text);border-bottom-color:var(--gold)}
+.nav-r{display:flex;align-items:center;gap:10px}
+.btn-nav{padding:7px 16px;border:1px solid var(--border2);font-size:11px;letter-spacing:0.1em;color:var(--text3);transition:all .2s;border-radius:2px}
+.btn-nav:hover{border-color:var(--gold);color:var(--gold)}
+.btn-nav-solid{padding:7px 16px;background:var(--gold);color:#080808;font-size:11px;letter-spacing:0.1em;font-weight:700;border-radius:2px;transition:all .2s}
+.btn-nav-solid:hover{background:var(--gold2)}
+.cart-ico{position:relative;padding:6px;color:var(--text3);transition:color .2s}
+.cart-ico:hover{color:var(--gold)}
+.cart-ct{position:absolute;top:0;right:0;background:var(--gold);color:#080808;border-radius:50%;width:15px;height:15px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center}
+
+.hero{min-height:460px;display:flex;align-items:center;padding:0 2rem;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.hero-grid-bg{position:absolute;inset:0;opacity:0.03;background-image:repeating-linear-gradient(90deg,var(--gold) 0,var(--gold) 1px,transparent 1px,transparent 60px),repeating-linear-gradient(0deg,var(--gold) 0,var(--gold) 1px,transparent 1px,transparent 60px)}
+.hero-content{position:relative;z-index:1;max-width:640px}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;padding:5px 14px;border:1px solid var(--border2);border-radius:20px;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text3);margin-bottom:1.5rem}
+.hero-tag-dot{width:6px;height:6px;background:var(--gold);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.hero-title{font-family:var(--font-display);font-size:clamp(48px,8vw,96px);font-weight:700;line-height:0.92;letter-spacing:-0.03em;margin-bottom:1rem;color:var(--gold)}
+.hero-desc{font-size:14px;color:var(--text2);max-width:400px;margin-bottom:2rem;line-height:1.7}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap}
+.btn-cta{padding:13px 32px;background:var(--gold);color:#080808;font-size:12px;letter-spacing:0.1em;font-weight:700;border-radius:2px;transition:all .2s}
+.btn-cta:hover{background:var(--gold2);transform:translateY(-1px)}
+.btn-cta-ghost{padding:13px 32px;border:1px solid var(--border2);color:var(--text2);font-size:12px;letter-spacing:0.1em;border-radius:2px;transition:all .2s}
+.btn-cta-ghost:hover{border-color:var(--gold);color:var(--gold)}
+.hero-side{position:absolute;right:2rem;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:1rem}
+.hero-pill{padding:8px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;font-size:11px;color:var(--text3);white-space:nowrap}
+
+.section{padding:3rem 1.5rem;max-width:1400px;margin:0 auto}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.sec-title{font-family:var(--font-display);font-size:clamp(24px,4vw,40px);font-weight:700;letter-spacing:-0.02em;color:var(--gold)}
+.sec-link{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);cursor:pointer;transition:color .2s}
+.sec-link:hover{color:var(--gold)}
+
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.5rem}
+.f-btn{padding:7px 16px;border:1px solid var(--border);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);border-radius:20px;transition:all .2s;background:transparent}
+.f-btn:hover{border-color:var(--border2);color:var(--text)}
+.f-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(212,168,67,0.07)}
+.f-sep{width:1px;background:var(--border);margin:0 4px;align-self:stretch}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1px;background:var(--border)}
+.pcard{background:var(--bg);cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
+.pcard:hover{background:var(--bg3);z-index:2}
+.pcard:hover .pcard-overlay{opacity:1}
+.pimg{aspect-ratio:3/4;background:var(--bg3);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.pimg-icon{font-size:72px;opacity:0.12;transition:transform .3s}
+.pcard:hover .pimg-icon{transform:scale(1.08)}
+.pcard-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .25s}
+.pcard-overlay-btn{padding:10px 24px;background:var(--gold);color:#080808;font-size:11px;letter-spacing:0.12em;font-weight:700;border-radius:2px;border:none;cursor:pointer}
+.pbadge{position:absolute;top:10px;left:10px;padding:4px 10px;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;font-weight:700;border-radius:1px}
+.pbadge-new{background:var(--gold);color:#080808}
+.pbadge-sale{background:var(--danger);color:#fff}
+.pbadge-hot{background:var(--gold2);color:#080808}
+.pinfo{padding:12px}
+.pcat{font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text3);margin-bottom:3px}
+.pname{font-size:13px;color:var(--text);margin-bottom:6px;font-weight:500}
+.pprice{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--gold)}
+.poldprice{font-size:12px;color:var(--text3);text-decoration:line-through;margin-left:6px}
+.pbtns{display:flex;gap:6px;margin-top:8px}
+.pbtn-add{flex:1;padding:8px;background:var(--bg4);border:1px solid var(--border);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text2);transition:all .2s;border-radius:1px}
+.pbtn-add:hover{background:var(--gold);color:#080808;border-color:var(--gold)}
+.pbtn-fav{padding:8px 10px;border:1px solid var(--border);color:var(--text3);background:var(--bg4);border-radius:1px;transition:all .2s}
+.pbtn-fav:hover{color:var(--danger);border-color:var(--danger)}
+
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:100;display:flex;align-items:flex-end;justify-content:flex-end}
+.overlay.oc{align-items:center;justify-content:center}
+.modal{background:var(--bg2);border-left:1px solid var(--border);width:440px;height:100vh;padding:1.5rem;overflow-y:auto;display:flex;flex-direction:column}
+.modal.mw{border:1px solid var(--border);border-radius:4px;height:auto;max-height:88vh;overflow-y:auto;width:580px;padding:1.5rem}
+.mclose{position:absolute;top:1rem;right:1rem;color:var(--text3);font-size:18px;padding:6px;transition:color .2s;line-height:1;z-index:1}
+.mclose:hover{color:var(--gold)}
+.mtitle{font-family:var(--font-display);font-size:26px;font-weight:700;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);color:var(--gold)}
+
+.fg{margin-bottom:1rem}
+.fl{display:block;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:5px}
+.fi{width:100%;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:14px;font-family:var(--font-body);border-radius:2px;outline:none;transition:border-color .2s}
+.fi:focus{border-color:var(--gold)}
+.fs{width:100%;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:14px;font-family:var(--font-body);border-radius:2px;outline:none;appearance:none}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+.citem{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.cimg{width:58px;height:72px;background:var(--bg4);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;border-radius:2px}
+.cname{font-size:13px;font-weight:500;margin-bottom:3px}
+.csize{font-size:10px;color:var(--text3);letter-spacing:0.05em}
+.cprice{font-family:var(--font-display);font-size:16px;color:var(--gold);margin-top:3px}
+.crem{color:var(--text3);font-size:16px;padding:4px;transition:color .2s}
+.crem:hover{color:var(--danger)}
+.csummary{margin-top:auto;padding-top:1rem;border-top:1px solid var(--border)}
+.ctotal{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.ctlabel{font-size:12px;color:var(--text2);letter-spacing:0.05em}
+.ctval{font-family:var(--font-display);font-size:26px;font-weight:700;color:var(--gold)}
+.cempty{text-align:center;padding:3rem 0;color:var(--text3);flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
+
+.ptabs{display:flex;border:1px solid var(--border);border-radius:2px;overflow:hidden;margin-bottom:1.5rem}
+.ptab{flex:1;padding:10px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text2);text-align:center;transition:all .2s;background:transparent;border:none;cursor:pointer}
+.ptab.active{background:var(--bg4);color:var(--gold);border-bottom:2px solid var(--gold)}
+.ppaypal{width:100%;padding:13px;background:#003087;color:#fff;font-size:13px;border-radius:3px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;border:none;font-family:var(--font-body);transition:background .2s}
+.ppaypal:hover{background:#002060}
+
+.quote-box{background:var(--bg3);border:1px solid var(--border);padding:1.25rem;border-radius:3px;margin-top:1.5rem}
+.qh{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border)}
+.qnum{font-size:10px;letter-spacing:0.12em;color:var(--gold);text-transform:uppercase}
+.qdate{font-size:10px;color:var(--text3)}
+.qline{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;color:var(--text2)}
+.qtotal{display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:var(--text);padding-top:0.75rem;border-top:1px solid var(--border);margin-top:6px}
+.qbtns{display:flex;gap:8px;margin-top:1rem}
+.qbtn{flex:1;padding:9px;border:1px solid var(--border2);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text2);transition:all .2s;border-radius:2px;background:transparent;cursor:pointer}
+.qbtn:hover{border-color:var(--gold);color:var(--gold)}
+.qbtn.primary{background:var(--gold);color:#080808;border-color:var(--gold);font-weight:700}
+.qbtn.primary:hover{background:var(--gold2)}
+
+.notif{position:fixed;top:70px;right:16px;background:var(--bg2);border:1px solid var(--border2);border-left:3px solid var(--gold);padding:10px 14px;font-size:12px;z-index:999;max-width:280px;transform:translateX(120%);transition:transform .3s;border-radius:2px}
+.notif.show{transform:translateX(0)}
+.notif.err{border-left-color:var(--danger)}
+.notif.ok{border-left-color:var(--success)}
+
+.admin-wrap{background:var(--bg);min-height:600px}
+.admin-nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 1.5rem;height:52px;display:flex;align-items:center;justify-content:space-between}
+.admin-body{display:grid;grid-template-columns:200px 1fr;min-height:548px}
+.aside{background:var(--bg2);border-right:1px solid var(--border);padding:1.25rem}
+.aside-item{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:3px;font-size:12px;color:var(--text2);cursor:pointer;transition:all .2s;margin-bottom:2px}
+.aside-item:hover,.aside-item.active{background:var(--bg3);color:var(--text)}
+.aside-item.active{border-left:2px solid var(--gold);padding-left:8px}
+.acontent{padding:1.5rem;overflow-y:auto}
+.atitle{font-family:var(--font-display);font-size:28px;font-weight:700;margin-bottom:0.2rem;color:var(--gold)}
+.asub{font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:1.5rem}
+.sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.5rem}
+.sc{background:var(--bg2);border:1px solid var(--border);padding:1rem;border-radius:3px}
+.sc-label{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.sc-val{font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--gold)}
+.sc-ch{font-size:10px;color:var(--success);margin-top:3px}
+.tw{background:var(--bg2);border:1px solid var(--border);border-radius:3px;overflow:hidden}
+.th2{padding:0.75rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.th2-title{font-size:12px;font-weight:500;letter-spacing:0.04em}
+table.at{width:100%;border-collapse:collapse}
+.at th{padding:8px 1.25rem;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);text-align:left;border-bottom:1px solid var(--border);background:var(--bg3)}
+.at td{padding:10px 1.25rem;font-size:12px;border-bottom:1px solid var(--border);color:var(--text2)}
+.at tr:last-child td{border-bottom:none}
+.at tr:hover td{background:var(--bg3);color:var(--text)}
+.bdg{display:inline-block;padding:2px 9px;border-radius:20px;font-size:9px;letter-spacing:0.08em;text-transform:uppercase;font-weight:700}
+.bdg-ok{background:rgba(77,255,143,0.12);color:var(--success)}
+.bdg-warn{background:rgba(240,180,50,0.12);color:#f0c040}
+.bdg-info{background:rgba(212,168,67,0.12);color:var(--gold)}
+.pform{background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:1.25rem}
+.fst{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:0.75rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);font-weight:600}
+.size-btn{padding:8px 14px;border:1px solid var(--border);font-size:11px;color:var(--text2);background:transparent;cursor:pointer;border-radius:2px;transition:all .2s}
+.size-btn:hover{border-color:var(--gold);color:var(--gold)}
+.size-btn.sel{background:var(--gold);color:#080808;border-color:var(--gold);font-weight:700}
+.otp-i{width:44px;height:52px;text-align:center;font-size:20px;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:2px;outline:none;font-family:var(--font-display)}
+.otp-i:focus{border-color:var(--gold)}
+@media(max-width:700px){.grid{grid-template-columns:repeat(2,1fr)}.admin-body{grid-template-columns:1fr}.aside{display:none}.sgrid{grid-template-columns:repeat(2,1fr)}.modal.mw{width:95vw}.modal{width:100vw}.fr{grid-template-columns:1fr}.hero-side{display:none}}
+</style>
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<div class="notif" id="notif"></div>
+
+<div id="page-shop">
+<nav>
+  <div style="display:flex;align-items:baseline">
+    <span class="logo-main">ONEBYONE</span>
+    <span class="logo-sub">Paris</span>
+  </div>
+  <div class="nav-links">
+    <span class="nav-link active" onclick="filterGender='all';filterType='all';renderProducts();setActiveNav(this)">Drop</span>
+    <span class="nav-link" onclick="filterGender='homme';filterType='all';renderProducts();setActiveNav(this)">Homme</span>
+    <span class="nav-link" onclick="filterGender='femme';filterType='all';renderProducts();setActiveNav(this)">Femme</span>
+    <span class="nav-link" onclick="filterGender='all';filterType='accessoire';renderProducts();setActiveNav(this)">Accessoires</span>
+  </div>
+  <div class="nav-r">
+    <button class="btn-nav" onclick="openMod('auth')">Connexion</button>
+    <button class="btn-nav-solid" onclick="showAdmin()">Admin</button>
+    <button class="cart-ico" onclick="openMod('cart')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      <span class="cart-ct" id="cart-ct">0</span>
+    </button>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-content">
+    <div class="hero-tag"><span class="hero-tag-dot"></span>New Drop — Printemps 2025</div>
+    <div class="hero-title">ONE<br>BY<br>ONE</div>
+    <div class="hero-desc">Streetwear et luxe — pièces exclusives pour ceux qui définissent leur propre style.</div>
+    <div class="hero-btns">
+      <button class="btn-cta" onclick="document.getElementById('catalogue').scrollIntoView({behavior:'smooth'})">Shop now</button>
+      <button class="btn-cta-ghost" onclick="openMod('auth')">Rejoindre le club</button>
+    </div>
+  </div>
+  <div class="hero-side">
+    <div class="hero-pill">Livraison offerte dès 150€</div>
+    <div class="hero-pill">Paiement sécurisé</div>
+    <div class="hero-pill">Retours 30 jours</div>
+    <div class="hero-pill">Paris — Worldwide</div>
+  </div>
+</div>
+
+<div class="section" id="catalogue">
+  <div class="sec-head">
+    <div class="sec-title" id="sec-title">All Drops</div>
+    <span class="sec-link" onclick="filterGender='all';filterType='all';renderProducts()">Voir tout →</span>
+  </div>
+  <div class="filters">
+    <button class="f-btn active" onclick="setG('all',this)">All</button>
+    <button class="f-btn" onclick="setG('homme',this)">Homme</button>
+    <button class="f-btn" onclick="setG('femme',this)">Femme</button>
+    <div class="f-sep"></div>
+    <button class="f-btn active" onclick="setT('all',this)">Tout</button>
+    <button class="f-btn" onclick="setT('pantalon',this)">Pantalon</button>
+    <button class="f-btn" onclick="setT('sweat',this)">Sweat</button>
+    <button class="f-btn" onclick="setT('tshirt',this)">T-shirt</button>
+    <button class="f-btn" onclick="setT('veste',this)">Veste</button>
+    <button class="f-btn" onclick="setT('robe',this)">Robe</button>
+    <button class="f-btn" onclick="setT('short',this)">Short</button>
+    <button class="f-btn" onclick="setT('accessoire',this)">Accessoire</button>
+  </div>
+  <div class="grid" id="prod-grid"></div>
+</div>
+
+<div style="background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+  <div>
+    <div style="display:flex;align-items:baseline;margin-bottom:4px"><span class="logo-main" style="font-size:15px">ONEBYONE</span><span class="logo-sub" style="font-size:9px">Paris</span></div>
+    <div style="font-size:11px;color:var(--text3)">Streetwear & Luxe — Paris, France</div>
+  </div>
+  <div style="display:flex;gap:2rem;flex-wrap:wrap">
+    <span style="font-size:11px;color:var(--text3);cursor:pointer" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--text3)'">CGV</span>
+    <span style="font-size:11px;color:var(--text3);cursor:pointer" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--text3)'">Mentions légales</span>
+    <span style="font-size:11px;color:var(--text3);cursor:pointer" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--text3)'">Contact</span>
+    <span style="font-size:11px;color:var(--text3)">© 2025 onebyone.paris</span>
+  </div>
+</div>
+</div>
+
+<div id="page-admin" style="display:none">
+  <div class="admin-wrap">
+    <div class="admin-nav">
+      <div style="display:flex;align-items:baseline"><span class="logo-main" style="font-size:16px">ONEBYONE</span><span class="logo-sub" style="font-size:9px;margin-left:4px">Admin</span></div>
+      <button class="btn-nav" onclick="showShop()">← Boutique</button>
+    </div>
+    <div class="admin-body">
+      <div class="aside">
+        <div style="font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text3);margin-bottom:0.75rem;padding-left:10px">Menu</div>
+        <div class="aside-item active" onclick="aTab('dash',this)"><span style="font-size:14px">▦</span> Dashboard</div>
+        <div class="aside-item" onclick="aTab('prods',this)"><span style="font-size:14px">◈</span> Produits</div>
+        <div class="aside-item" onclick="aTab('orders',this)"><span style="font-size:14px">◎</span> Commandes</div>
+        <div class="aside-item" onclick="aTab('clients',this)"><span style="font-size:14px">◉</span> Clients</div>
+      </div>
+      <div class="acontent" id="acontent"></div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay oc" id="mod-auth" style="display:none" onclick="if(event.target===this)closeMod('auth')">
+  <div class="modal mw" style="position:relative"><button class="mclose" onclick="closeMod('auth')">✕</button><div id="auth-p"></div></div>
+</div>
+<div class="overlay" id="mod-cart" style="display:none" onclick="if(event.target===this)closeMod('cart')">
+  <div class="modal" id="cart-p"></div>
+</div>
+<div class="overlay oc" id="mod-checkout" style="display:none" onclick="if(event.target===this)closeMod('checkout')">
+  <div class="modal mw" style="position:relative"><button class="mclose" onclick="closeMod('checkout')">✕</button><div id="checkout-p"></div></div>
+</div>
+<div class="overlay oc" id="mod-prod" style="display:none" onclick="if(event.target===this)closeMod('prod')">
+  <div class="modal mw" style="position:relative"><button class="mclose" onclick="closeMod('prod')">✕</button><div id="prod-p"></div></div>
+</div>
+
+<script>
+var cart=JSON.parse(localStorage.getItem('obp_cart')||'[]');
+var users=JSON.parse(localStorage.getItem('obp_users')||'[]');
+var orders=JSON.parse(localStorage.getItem('obp_orders')||'[]');
+var products=JSON.parse(localStorage.getItem('obp_products')||'null');
+var filterGender='all',filterType='all';
+var selSize='',currentUser=null,pendingEmail='',pendingOTP='';
+var ICONS={pantalon:'👖',sweat:'🧥',tshirt:'👕',veste:'🥼',robe:'👗',accessoire:'🧣',short:'🩲'};
+
+if(!products){
+  products=[
+    {id:1,name:'Cargo Noir Tactical',price:139,cat:'homme',type:'pantalon',badge:'New',sizes:['XS','S','M','L','XL'],stock:14,desc:'Coupe droite avec poches cargo oversize. Tissu ripstop noir mat. Détails coutures contrastées blanches.'},
+    {id:2,name:'Sweat Archive Drop',price:95,cat:'homme',type:'sweat',badge:'Hot',sizes:['S','M','L','XL'],stock:20,desc:'Coton lourd 400g brossé, coupe boxy, broderie signature OBO au dos.'},
+    {id:3,name:'Coach Jacket Void',price:195,oldPrice:250,cat:'homme',type:'veste',badge:'Sale',sizes:['S','M','L'],stock:7,desc:'Nylon technique déperlant, doublure mesh, bande latérale signature.'},
+    {id:4,name:'Essential Tee OBO',price:55,cat:'homme',type:'tshirt',badge:null,sizes:['XS','S','M','L','XL','XXL'],stock:45,desc:'100% coton peigné 220g, coupe oversize allongée, logo brodé poitrine.'},
+    {id:5,name:'Short Cargo Y2K',price:79,cat:'homme',type:'short',badge:'New',sizes:['S','M','L','XL'],stock:18,desc:'Style utilitaire Y2K, poches multiples, taille élastiquée avec cordon.'},
+    {id:6,name:'Wide Leg Onyx',price:155,cat:'femme',type:'pantalon',badge:'New',sizes:['XS','S','M','L'],stock:11,desc:'Tissu satin opaque, taille haute, jambe palazzo très large, tombé parfait.'},
+    {id:7,name:'Robe Asymétrique Dark',price:175,cat:'femme',type:'robe',badge:null,sizes:['XS','S','M','L'],stock:8,desc:'Drapage asymétrique, tissu crêpe noir intense, fentes latérales profondes.'},
+    {id:8,name:'Crop Sweat Luna',price:85,cat:'femme',type:'sweat',badge:'Hot',sizes:['XS','S','M'],stock:16,desc:'Coupe courte boxy, French terry, surpiqûres apparentes, logo OBO Paris.'},
+    {id:9,name:'Blazer Power Femme',price:235,cat:'femme',type:'veste',badge:'New',sizes:['XS','S','M','L'],stock:5,desc:'Structure oversize masculin, laine mélangée noire, boutons métal gravés OBO.'},
+    {id:10,name:'Bonnet OBO Paris',price:45,cat:'homme',type:'accessoire',badge:null,sizes:['Unique'],stock:30,desc:'Laine mérinos côtelée, revers doublé, patch brodé OBO Paris.'},
+    {id:11,name:'Tote Bag Signature',price:39,cat:'femme',type:'accessoire',badge:null,sizes:['Unique'],stock:25,desc:'Coton épais, impression sérigraphique, anses renforcées.'},
+    {id:12,name:'Crop Tee Femme',price:49,cat:'femme',type:'tshirt',badge:null,sizes:['XS','S','M','L'],stock:32,desc:'Coton 200g, coupe crop, logo OBO brodé, ourlet brut.'},
+  ];
+  saveProd();
+}
+
+function saveProd(){localStorage.setItem('obp_products',JSON.stringify(products))}
+function saveCart(){localStorage.setItem('obp_cart',JSON.stringify(cart))}
+function saveUsers(){localStorage.setItem('obp_users',JSON.stringify(users))}
+function saveOrders(){localStorage.setItem('obp_orders',JSON.stringify(orders))}
+
+function notify(msg,type){
+  var n=document.getElementById('notif');
+  n.textContent=msg;
+  n.className='notif show'+(type==='err'?' err':type==='ok'?' ok':'');
+  clearTimeout(n._t);n._t=setTimeout(function(){n.classList.remove('show')},3000);
+}
+
+function setActiveNav(el){document.querySelectorAll('.nav-link').forEach(function(x){x.classList.remove('active')});el.classList.add('active')}
+function showAdmin(){document.getElementById('page-shop').style.display='none';document.getElementById('page-admin').style.display='block';renderAdmin('dash')}
+function showShop(){document.getElementById('page-admin').style.display='none';document.getElementById('page-shop').style.display='block'}
+
+function setG(g,btn){
+  filterGender=g;
+  document.querySelectorAll('.filters .f-btn').forEach(function(b,i){if(i<3)b.classList.remove('active')});
+  btn.classList.add('active');
+  var t={all:'All Drops',homme:'Collection Homme',femme:'Collection Femme'};
+  document.getElementById('sec-title').textContent=t[g]||'All Drops';
+  renderProducts();
+}
+function setT(t,btn){
+  filterType=t;
+  document.querySelectorAll('.filters .f-btn').forEach(function(b,i){if(i>=4)b.classList.remove('active')});
+  btn.classList.add('active');
+  renderProducts();
+}
+
+function renderProducts(){
+  var grid=document.getElementById('prod-grid');
+  var f=products.filter(function(p){
+    return (filterGender==='all'||p.cat===filterGender)&&(filterType==='all'||p.type===filterType);
+  });
+  if(!f.length){grid.innerHTML='<div style="padding:3rem;color:var(--text3);font-size:13px;grid-column:1/-1;text-align:center">Aucun produit trouvé.</div>';return;}
+  grid.innerHTML=f.map(function(p){
+    var b='';
+    if(p.badge==='New')b='<div class="pbadge pbadge-new">New</div>';
+    else if(p.badge==='Sale')b='<div class="pbadge pbadge-sale">Sale</div>';
+    else if(p.badge==='Hot')b='<div class="pbadge pbadge-hot">Hot</div>';
+    return '<div class="pcard" onclick="openProd('+p.id+')">'
+      +'<div class="pimg"><div class="pimg-icon">'+(ICONS[p.type]||'👕')+'</div>'+b
+      +'<div class="pcard-overlay"><button class="pcard-overlay-btn" onclick="event.stopPropagation();quickAdd('+p.id+')">+ Ajouter</button></div></div>'
+      +'<div class="pinfo"><div class="pcat">'+p.cat+' — '+p.type+'</div>'
+      +'<div class="pname">'+p.name+'</div>'
+      +'<div style="display:flex;align-items:baseline;gap:4px"><span class="pprice">'+p.price+'€</span>'+(p.oldPrice?'<span class="poldprice">'+p.oldPrice+'€</span>':'')+'</div>'
+      +'<div class="pbtns"><button class="pbtn-add" onclick="event.stopPropagation();quickAdd('+p.id+')">+ Panier</button>'
+      +'<button class="pbtn-fav" onclick="event.stopPropagation();notify(\'Ajouté aux favoris ♥\',\'ok\')">♡</button></div></div></div>';
+  }).join('');
+}
+
+function openProd(id){
+  var p=products.find(function(x){return x.id===id});if(!p)return;
+  selSize='';
+  document.getElementById('prod-p').innerHTML=
+    '<div style="display:grid;grid-template-columns:1fr 1.1fr;gap:1.5rem">'
+    +'<div style="background:var(--bg3);border-radius:3px;aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;font-size:80px;opacity:0.15">'+(ICONS[p.type]||'👕')+'</div>'
+    +'<div style="padding:0.5rem 0">'
+    +'<div style="font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">'+p.cat+' — '+p.type+'</div>'
+    +'<div style="font-family:var(--font-display);font-size:26px;font-weight:700;margin-bottom:6px;letter-spacing:-0.02em;color:var(--gold)">'+p.name+'</div>'
+    +'<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:1rem"><span style="font-family:var(--font-display);font-size:26px;font-weight:700;color:var(--gold)">'+p.price+'€</span>'+(p.oldPrice?'<span style="font-size:15px;color:var(--text3);text-decoration:line-through">'+p.oldPrice+'€</span>':'')+'</div>'
+    +'<div style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:1.25rem">'+p.desc+'</div>'
+    +'<div style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Taille</div>'
+    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem">'
+    +p.sizes.map(function(s){return '<button class="size-btn" onclick="pickSize(this,\''+s+'\')">'+s+'</button>'}).join('')
+    +'</div>'
+    +'<button onclick="addFromDetail('+p.id+')" style="width:100%;padding:13px;background:var(--gold);color:#080808;font-size:12px;font-weight:700;letter-spacing:0.1em;border:none;border-radius:2px;cursor:pointer;font-family:var(--font-body)">Ajouter au panier</button>'
+    +'<div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px">Stock : '+p.stock+' pièces disponibles</div>'
+    +'</div></div>';
+  openMod('prod');
+}
+
+function pickSize(btn,s){
+  document.querySelectorAll('.size-btn').forEach(function(b){b.classList.remove('sel')});
+  btn.classList.add('sel');selSize=s;
+}
+function addFromDetail(id){
+  if(!selSize){notify('Choisis une taille !','err');return;}
+  var p=products.find(function(x){return x.id===id});
+  cart.push(Object.assign({},p,{selSize:selSize,cartId:Date.now()}));
+  saveCart();updCart();notify(p.name+' ajouté ✓','ok');closeMod('prod');selSize='';
+}
+function quickAdd(id){
+  var p=products.find(function(x){return x.id===id});
+  cart.push(Object.assign({},p,{selSize:p.sizes[0]||'M',cartId:Date.now()}));
+  saveCart();updCart();notify(p.name+' ajouté ✓','ok');
+}
+function updCart(){document.getElementById('cart-ct').textContent=cart.length}
+
+function openMod(id){
+  if(id==='cart')renderCart();
+  if(id==='checkout')renderCheckout();
+  if(id==='auth')renderAuth('login');
+  document.getElementById('mod-'+id).style.display='flex';
+}
+function closeMod(id){document.getElementById('mod-'+id).style.display='none'}
+
+function renderCart(){
+  var total=cart.reduce(function(a,p){return a+p.price},0);
+  var p=document.getElementById('cart-p');
+  p.innerHTML='<div class="mtitle">Mon Panier <span style="font-size:14px;color:var(--text3);font-weight:400">('+cart.length+')</span></div>'
+    +(cart.length?
+      '<div style="flex:1;overflow-y:auto">'+cart.map(function(item){
+        return '<div class="citem"><div class="cimg">'+(ICONS[item.type]||'👕')+'</div>'
+        +'<div style="flex:1"><div class="cname">'+item.name+'</div>'
+        +'<div class="csize">Taille : '+item.selSize+'</div>'
+        +'<div class="cprice">'+item.price+'€</div></div>'
+        +'<button class="crem" onclick="removeCart('+item.cartId+')">✕</button></div>';
+      }).join('')+'</div>'
+      +'<div class="csummary"><div class="ctotal"><span class="ctlabel">Total</span><span class="ctval">'+total+'€</span></div>'
+      +'<button onclick="closeMod(\'cart\');openMod(\'checkout\')" style="width:100%;padding:13px;background:var(--gold);color:#080808;font-size:12px;font-weight:700;letter-spacing:0.1em;border:none;border-radius:2px;cursor:pointer;font-family:var(--font-body);margin-bottom:8px">Passer la commande →</button>'
+      +'<button onclick="closeMod(\'cart\')" style="width:100%;padding:10px;border:1px solid var(--border);font-size:11px;letter-spacing:0.1em;color:var(--text2);background:transparent;cursor:pointer;border-radius:2px">Continuer mes achats</button></div>'
+    :'<div class="cempty"><div style="font-size:40px;opacity:0.15;margin-bottom:1rem">🛒</div><div style="font-size:13px">Ton panier est vide</div><button onclick="closeMod(\'cart\')" style="margin-top:1rem;padding:10px 24px;border:1px solid var(--border2);font-size:11px;color:var(--text2);background:transparent;cursor:pointer;border-radius:2px">Découvrir la collection</button></div>');
+}
+
+function removeCart(id){cart=cart.filter(function(x){return x.cartId!==id});saveCart();updCart();renderCart()}
+
+function renderCheckout(){
+  var total=cart.reduce(function(a,p){return a+p.price},0);
+  var ship=total>=150?0:8;
+  document.getElementById('checkout-p').innerHTML=
+    '<div class="mtitle">Paiement</div>'
+    +'<div class="ptabs"><button class="ptab active" onclick="payTab(\'card\',this)">Carte bancaire</button><button class="ptab" onclick="payTab(\'paypal\',this)">PayPal</button></div>'
+    +'<div id="pay-content">'
+    +'<div style="display:flex;gap:6px;margin-bottom:1rem"><span class="bdg bdg-info">VISA</span><span class="bdg bdg-info">Mastercard</span><span class="bdg bdg-info">CB</span><span class="bdg bdg-info">3D Secure</span></div>'
+    +'<div class="fg"><label class="fl">Titulaire</label><input class="fi" id="c-name" placeholder="Prénom Nom"/></div>'
+    +'<div class="fg"><label class="fl">Numéro de carte</label><input class="fi" id="c-num" placeholder="1234 5678 9012 3456" maxlength="19" oninput="fmtCard(this)"/></div>'
+    +'<div class="fr"><div class="fg"><label class="fl">Expiration</label><input class="fi" id="c-exp" placeholder="MM/AA" maxlength="5"/></div><div class="fg"><label class="fl">CVV</label><input class="fi" id="c-cvv" placeholder="123" maxlength="3" type="password"/></div></div>'
+    +'</div>'
+    +'<div style="background:var(--bg3);border:1px solid var(--border);padding:1rem;border-radius:2px;margin:1rem 0">'
+    +'<div style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Récapitulatif</div>'
+    +cart.map(function(i){return '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:2px 0"><span>'+i.name+' ('+i.selSize+')</span><span>'+i.price+'€</span></div>'}).join('')
+    +'<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:2px 0;margin-top:4px"><span>Livraison</span><span>'+(ship===0?'Offerte':ship+'€')+'</span></div>'
+    +'<div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700;color:var(--gold);padding-top:8px;border-top:1px solid var(--border);margin-top:6px"><span>Total</span><span>'+(total+ship)+'€</span></div>'
+    +'</div>'
+    +'<div class="fg"><label class="fl">Email de confirmation</label><input class="fi" id="c-email" placeholder="ton@email.com"/></div>'
+    +'<div class="fg"><label class="fl">Adresse de livraison</label><input class="fi" id="c-addr" placeholder="Rue, ville, code postal"/></div>'
+    +'<button onclick="processPayment()" style="width:100%;padding:14px;background:var(--gold);color:#080808;font-size:12px;font-weight:700;letter-spacing:0.12em;border:none;border-radius:2px;cursor:pointer;font-family:var(--font-body)">Confirmer et payer '+(total+ship)+'€ →</button>';
+}
+
+function payTab(t,btn){
+  document.querySelectorAll('.ptab').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  var c=document.getElementById('pay-content');
+  if(t==='paypal'){
+    c.innerHTML='<div style="text-align:center;padding:1.5rem 0"><div style="font-size:13px;color:var(--text2);margin-bottom:1.5rem">Tu seras redirigé vers PayPal pour finaliser ton paiement de manière sécurisée.</div>'
+      +'<button class="ppaypal" onclick="processPayment()"><span style="font-style:italic;font-weight:700;font-size:18px">Pay</span><span style="font-style:italic;font-weight:300;font-size:18px;color:#69a9f0">Pal</span></button></div>';
+  } else {
+    c.innerHTML='<div style="display:flex;gap:6px;margin-bottom:1rem"><span class="bdg bdg-info">VISA</span><span class="bdg bdg-info">Mastercard</span><span class="bdg bdg-info">CB</span><span class="bdg bdg-info">3D Secure</span></div>'
+      +'<div class="fg"><label class="fl">Titulaire</label><input class="fi" id="c-name" placeholder="Prénom Nom"/></div>'
+      +'<div class="fg"><label class="fl">Numéro de carte</label><input class="fi" id="c-num" placeholder="1234 5678 9012 3456" maxlength="19" oninput="fmtCard(this)"/></div>'
+      +'<div class="fr"><div class="fg"><label class="fl">Expiration</label><input class="fi" id="c-exp" placeholder="MM/AA" maxlength="5"/></div><div class="fg"><label class="fl">CVV</label><input class="fi" id="c-cvv" placeholder="123" maxlength="3" type="password"/></div></div>';
+  }
+}
+function fmtCard(el){el.value=el.value.replace(/\D/g,'').replace(/(.{4})/g,'$1 ').trim()}
+
+function processPayment(){
+  var emailEl=document.getElementById('c-email');
+  if(!emailEl||!emailEl.value||!emailEl.value.includes('@')){notify('Email invalide','err');return;}
+  var total=cart.reduce(function(a,p){return a+p.price},0);
+  var ship=total>=150?0:8;
+  var order={id:'OBO-'+Date.now().toString().slice(-6),date:new Date().toLocaleDateString('fr-FR'),email:emailEl.value,items:[...cart],total:total+ship,status:'Confirmée'};
+  orders.push(order);saveOrders();
+  renderQuote(order);
+}
+
+function renderQuote(order){
+  document.getElementById('checkout-p').innerHTML=
+    '<div style="text-align:center;margin-bottom:1.5rem">'
+    +'<div style="font-size:40px;color:var(--gold);margin-bottom:8px">✓</div>'
+    +'<div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--gold);margin-bottom:4px">Commande confirmée !</div>'
+    +'<div style="font-size:13px;color:var(--text2)">Confirmation envoyée à '+order.email+'</div></div>'
+    +'<div class="quote-box">'
+    +'<div class="qh"><div><div class="qnum">Devis N° '+order.id+'</div><div style="font-size:10px;color:var(--text3);margin-top:2px">onebyone.paris</div></div>'
+    +'<div style="text-align:right"><div class="qdate">'+order.date+'</div><div style="font-size:10px;color:var(--text3)">'+order.email+'</div></div></div>'
+    +'<div>'+order.items.map(function(i){return '<div class="qline"><span>'+i.name+' — '+i.selSize+'</span><span>'+i.price+'€</span></div>'}).join('')+'</div>'
+    +'<div class="qline" style="margin-top:4px;padding-top:4px"><span>Livraison</span><span>'+(order.total-order.items.reduce(function(a,p){return a+p.price},0)===0?'Offerte':(order.total-order.items.reduce(function(a,p){return a+p.price},0))+'€')+'</span></div>'
+    +'<div class="qtotal"><span>Total TTC</span><span style="color:var(--gold)">'+order.total+'€</span></div>'
+    +'<div class="qbtns"><button class="qbtn" onclick="printQuote(\''+order.id+'\')">Télécharger PDF</button>'
+    +'<button class="qbtn primary" onclick="cart=[];saveCart();updCart();closeMod(\'checkout\')">Retour boutique</button></div></div>';
+  cart=[];saveCart();updCart();
+}
+
+function printQuote(num){
+  var o=orders.find(function(x){return x.id===num});if(!o)return;
+  var w=window.open('','_blank');
+  var sub=o.items.reduce(function(a,p){return a+p.price},0);
+  var ship=o.total-sub;
+  w.document.write('<!DOCTYPE html><html><head><title>Devis '+o.id+'</title><style>body{font-family:Arial,sans-serif;padding:40px;color:#111;max-width:620px;margin:0 auto}.logo{font-size:22px;font-weight:700;letter-spacing:0.05em;color:#c49a2a}.sub{font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:#888;margin-bottom:2rem}table{width:100%;border-collapse:collapse;margin-bottom:1rem}td,th{padding:9px 0;border-bottom:1px solid #eee;font-size:13px;text-align:left}th{font-weight:600;font-size:10px;text-transform:uppercase;color:#888}.total{font-size:15px;font-weight:700;color:#c49a2a}.meta{display:flex;justify-content:space-between;margin-bottom:2rem}.foot{margin-top:3rem;padding-top:1rem;border-top:1px solid #eee;font-size:11px;color:#aaa;text-align:center}</style></head><body>');
+  w.document.write('<div class="logo">ONEBYONE <span style="font-size:10px;letter-spacing:0.3em;font-weight:400;color:#aaa">PARIS</span></div>');
+  w.document.write('<div class="sub">Streetwear & Luxe</div>');
+  w.document.write('<div class="meta"><div><strong>Commande N°</strong> '+o.id+'<br><span style="font-size:12px;color:#888">'+o.date+'</span></div><div style="text-align:right"><strong>Client</strong><br><span style="font-size:12px;color:#888">'+o.email+'</span></div></div>');
+  w.document.write('<table><tr><th>Article</th><th>Taille</th><th style="text-align:right">Prix</th></tr>');
+  o.items.forEach(function(i){w.document.write('<tr><td>'+i.name+'</td><td>'+i.selSize+'</td><td style="text-align:right">'+i.price+'€</td></tr>')});
+  w.document.write('<tr><td>Livraison</td><td></td><td style="text-align:right">'+(ship===0?'Offerte':ship+'€')+'</td></tr>');
+  w.document.write('<tr><td class="total">Total TTC</td><td></td><td class="total" style="text-align:right">'+o.total+'€</td></tr></table>');
+  w.document.write('<div class="foot">onebyone.paris — Merci pour ta commande !</div></body></html>');
+  w.document.close();w.print();
+}
+
+function renderAuth(mode){
+  var p=document.getElementById('auth-p');
+  if(mode==='login'){
+    p.innerHTML='<div class="mtitle">Connexion</div>'
+      +'<div class="fg"><label class="fl">Email</label><input class="fi" id="a-email" placeholder="ton@email.com"/></div>'
+      +'<div class="fg"><label class="fl">Mot de passe</label><input class="fi" type="password" id="a-pass" placeholder="••••••••"/></div>'
+      +'<button onclick="doLogin()" style="width:100%;padding:13px;background:var(--gold);color:#080808;font-size:12px;font-weight:700;letter-spacing:0.1em;border:none;border-radius:2px;cursor:pointer;font-family:var(--font-body);margin-bottom:1rem">Se connecter</button>'
+      +'<div style="text-align:center;font-size:12px;color:var(--text3)">Pas encore de compte ? <span style="color:var(--gold);cursor:pointer" onclick="renderAuth(\'register\')">Créer un compte</span></div>';
+  } else if(mode==='register'){
+    p.innerHTML='<div class="mtitle">Créer un compte</div>'
+      +'<div class="fr"><div class="fg"><label class="fl">Prénom</label><input class="fi" id="r-fn" placeholder="Prénom"/></div><div class="fg"><label class="fl">Nom</label><input class="fi" id="r-ln" placeholder="Nom"/></div></div>'
+      +'<div class="fg"><label class="fl">Email</label><input class="fi" id="r-email" placeholder="ton@email.com"/></div>'
+      +'<div class="fg"><label class="fl">Mot de passe</label><input class="fi" type="password" id="r-pass" placeholder="Min. 8 caractères"/></div>'
+      +'<button onclick="doRegister()" style="width:100%;padding:13px;background:var(--gold);color:#080808;font-size:12px;font-weight:700;letter-spacing:0.1em;border:none;border-radius:2px;cursor:pointer;font-family:var(--font-body);margin-bottom:1rem">Créer mon compte</button>'
+      +'<div style="text-align:center;font-size:12px;color:var(--text3)">Déjà un compte ? <span style="color:var(--gold);cursor:pointer" onclick="renderAuth(\'login\')">Se connecter</span></div>';
+  } else if(mode==='verify'){
+    p.innerHTML='<div style="text-align:center;padding:1rem 0">'
+      +'<div style="font-size:36px;color:var(--gold);margin-bottom:12px">✉</div>'
+      +'<div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--gold);margin-bottom:8px">Vérifie ton email</div>'
+      +'<div style="font-size:13px;color:var(--text2);margin-bottom:1.5rem">Code envoyé à <strong style="color:var(--text)">'+pendingEmail+'</strong></div>'
+      +'<div style="display:flex;gap:8px;justify-content:center;margin-bottom:1.5rem">'
+      +'<input class="otp-i" maxlength="1" oninput="otpNext(this,1)"/>'
+      +'<input class="otp-i" maxlength="1" oninput="otpNext(this,2)"/>'
+      +'<input class="otp-i" maxlength="1" oninput="otpNext(this,3)"/>'
+      +'<input class="otp-i" maxlength="1" oninput="otpNext(this,4)"/>'
+      +'<input class="otp-i" maxlength="1" oninput="otpNext(this,5)"/>'
+      +'<input class="otp-i" maxlength="1" oninput="otpNext(this,6)"/>'
+      +'</div>'
+      +'<button onclick="verifyOTP()" style="width:100%;padding:13px;background:var(--gold);color:#080808;font-size:12px;font-weight:700;letter-spacing:0.1em;border:none;border-radius:2px;cursor:pointer;font-family:var(--font-body)">Vérifier le code</button>'
+      +'<div style="font-size:11px;color:var(--text3);margin-top:1rem">Code de démo : <strong style="color:var(--gold)">'+pendingOTP+'</strong></div>'
+      +'</div>';
+  }
+}
+
+function doLogin(){
+  var email=document.getElementById('a-email').value;
+  var pass=document.getElementById('a-pass').value;
+  var u=users.find(function(x){return x.email===email&&x.pass===pass});
+  if(!u){notify('Email ou mot de passe incorrect','err');return;}
+  currentUser=u;notify('Bienvenue '+u.firstName+' !','ok');closeMod('auth');
+}
+function doRegister(){
+  var fn=document.getElementById('r-fn').value;
+  var ln=document.getElementById('r-ln').value;
+  var email=document.getElementById('r-email').value;
+  var pass=document.getElementById('r-pass').value;
+  if(!fn||!ln||!email||!pass){notify('Remplis tous les champs','err');return;}
+  if(!email.includes('@')){notify('Email invalide','err');return;}
+  if(pass.length<8){notify('Mot de passe trop court','err');return;}
+  if(users.find(function(x){return x.email===email})){notify('Email déjà utilisé','err');return;}
+  pendingEmail=email;
+  pendingOTP=Math.floor(100000+Math.random()*900000).toString();
+  var newUser={firstName:fn,lastName:ln,email:email,pass:pass,verified:false,joined:new Date().toLocaleDateString('fr-FR')};
+  users.push(newUser);saveUsers();
+  renderAuth('verify');
+}
+function otpNext(el,n){if(el.value&&n<6){var inputs=document.querySelectorAll('.otp-i');inputs[n].focus()}}
+function verifyOTP(){
+  var inputs=document.querySelectorAll('.otp-i');
+  var code=Array.from(inputs).map(function(i){return i.value}).join('');
+  if(code===pendingOTP){
+    var u=users.find(function(x){return x.email===pendingEmail});
+    if(u)u.verified=true;saveUsers();
+    currentUser=u;notify('Compte vérifié ! Bienvenue '+u.firstName+' 🎉','ok');closeMod('auth');
+  } else {notify('Code incorrect','err');}
+}
+
+function renderAdmin(tab){
+  var c=document.getElementById('acontent');
+  if(tab==='dash'){
+    var rev=orders.reduce(function(a,o){return a+o.total},0);
+    c.innerHTML='<div class="atitle">Dashboard</div><div class="asub">Vue d\'ensemble — onebyone.paris</div>'
+      +'<div class="sgrid">'
+      +'<div class="sc"><div class="sc-label">Revenus</div><div class="sc-val">'+rev.toFixed(0)+'€</div><div class="sc-ch">Total cumulé</div></div>'
+      +'<div class="sc"><div class="sc-label">Commandes</div><div class="sc-val">'+orders.length+'</div><div class="sc-ch">Toutes statuts</div></div>'
+      +'<div class="sc"><div class="sc-label">Clients</div><div class="sc-val">'+users.length+'</div><div class="sc-ch">Inscrits</div></div>'
+      +'<div class="sc"><div class="sc-label">Produits</div><div class="sc-val">'+products.length+'</div><div class="sc-ch">En catalogue</div></div>'
+      +'</div>'
+      +(orders.length?'<div class="tw"><div class="th2"><span class="th2-title">Dernières commandes</span></div>'
+      +'<table class="at"><tr><th>N°</th><th>Date</th><th>Client</th><th>Montant</th><th>Statut</th></tr>'
+      +orders.slice(-5).reverse().map(function(o){return '<tr><td style="color:var(--gold)">'+o.id+'</td><td>'+o.date+'</td><td>'+o.email+'</td><td style="color:var(--gold);font-weight:700">'+o.total+'€</td><td><span class="bdg bdg-ok">'+o.status+'</span></td></tr>'}).join('')
+      +'</table></div>':'<div style="padding:2rem;color:var(--text3);font-size:13px;text-align:center">Aucune commande pour l\'instant.</div>');
+  } else if(tab==='prods'){
+    c.innerHTML='<div class="atitle">Produits</div><div class="asub">Gérer le catalogue</div>'
+      +'<div class="pform" style="margin-bottom:1.5rem">'
+      +'<div class="fst">Ajouter un produit</div>'
+      +'<div class="fr"><div class="fg"><label class="fl">Nom du produit</label><input class="fi" id="np-name" placeholder="Ex: Cargo Tech Noir"/></div><div class="fg"><label class="fl">Prix (€)</label><input class="fi" id="np-price" type="number" placeholder="89"/></div></div>'
+      +'<div class="fr"><div class="fg"><label class="fl">Catégorie</label><select class="fs fi" id="np-cat"><option value="homme">Homme</option><option value="femme">Femme</option></select></div><div class="fg"><label class="fl">Type</label><select class="fs fi" id="np-type"><option value="pantalon">Pantalon</option><option value="sweat">Sweat</option><option value="tshirt">T-shirt</option><option value="veste">Veste</option><option value="robe">Robe</option><option value="short">Short</option><option value="accessoire">Accessoire</option></select></div></div>'
+      +'<div class="fr"><div class="fg"><label class="fl">Stock</label><input class="fi" id="np-stock" type="number" placeholder="20"/></div><div class="fg"><label class="fl">Badge</label><select class="fs fi" id="np-badge"><option value="">Aucun</option><option value="New">New</option><option value="Hot">Hot</option><option value="Sale">Sale</option></select></div></div>'
+      +'<div class="fg"><label class="fl">Tailles (séparées par virgule)</label><input class="fi" id="np-sizes" placeholder="XS, S, M, L, XL"/></div>'
+      +'<div class="fg"><label class="fl">Description</label><input class="fi" id="np-desc" placeholder="Description courte du produit"/></div>'
+      +'<button onclick="addProduct()" style="padding:11px 28px;background:var(--gold);color:#080808;font-size:11px;font-weight:700;letter-spacing:0.1em;border:none;border-radius:2px;cursor:pointer;font-family:var(--font-body)">Ajouter au catalogue</button>'
+      +'</div>'
+      +'<div class="tw"><div class="th2"><span class="th2-title">Catalogue ('+products.length+' produits)</span></div>'
+      +'<table class="at"><tr><th>Nom</th><th>Catégorie</th><th>Type</th><th>Prix</th><th>Stock</th><th>Action</th></tr>'
+      +products.map(function(p){return '<tr><td style="color:var(--text)">'+p.name+'</td><td>'+p.cat+'</td><td>'+p.type+'</td><td style="color:var(--gold);font-weight:700">'+p.price+'€</td><td>'+p.stock+'</td><td><button onclick="delProduct('+p.id+')" style="font-size:10px;color:var(--danger);background:transparent;border:1px solid var(--danger);padding:3px 9px;border-radius:2px;cursor:pointer">Suppr.</button></td></tr>'}).join('')
+      +'</table></div>';
+  } else if(tab==='orders'){
+    c.innerHTML='<div class="atitle">Commandes</div><div class="asub">'+orders.length+' commande(s) au total</div>'
+      +(orders.length?'<div class="tw"><table class="at"><tr><th>N° Commande</th><th>Date</th><th>Email</th><th>Articles</th><th>Total</th><th>Statut</th></tr>'
+      +orders.slice().reverse().map(function(o){return '<tr><td style="color:var(--gold)">'+o.id+'</td><td>'+o.date+'</td><td>'+o.email+'</td><td>'+o.items.length+' article(s)</td><td style="color:var(--gold);font-weight:700">'+o.total+'€</td><td><span class="bdg bdg-ok">'+o.status+'</span></td></tr>'}).join('')+'</table></div>'
+      :'<div style="padding:3rem;color:var(--text3);font-size:13px;text-align:center">Aucune commande.</div>');
+  } else if(tab==='clients'){
+    c.innerHTML='<div class="atitle">Clients</div><div class="asub">'+users.length+' client(s) inscrit(s)</div>'
+      +(users.length?'<div class="tw"><table class="at"><tr><th>Prénom</th><th>Nom</th><th>Email</th><th>Inscrit le</th><th>Vérifié</th></tr>'
+      +users.map(function(u){return '<tr><td>'+u.firstName+'</td><td>'+u.lastName+'</td><td>'+u.email+'</td><td>'+u.joined+'</td><td>'+(u.verified?'<span class="bdg bdg-ok">Oui</span>':'<span class="bdg bdg-warn">Non</span>')+'</td></tr>'}).join('')+'</table></div>'
+      :'<div style="padding:3rem;color:var(--text3);font-size:13px;text-align:center">Aucun client inscrit.</div>');
+  }
+}
+
+function aTab(tab,el){
+  document.querySelectorAll('.aside-item').forEach(function(x){x.classList.remove('active')});
+  el.classList.add('active');renderAdmin(tab);
+}
+
+function addProduct(){
+  var name=document.getElementById('np-name').value;
+  var price=parseFloat(document.getElementById('np-price').value);
+  var cat=document.getElementById('np-cat').value;
+  var type=document.getElementById('np-type').value;
+  var stock=parseInt(document.getElementById('np-stock').value)||10;
+  var badge=document.getElementById('np-badge').value||null;
+  var sizes=document.getElementById('np-sizes').value.split(',').map(function(s){return s.trim()}).filter(Boolean);
+  var desc=document.getElementById('np-desc').value;
+  if(!name||!price){notify('Nom et prix requis','err');return;}
+  if(!sizes.length)sizes=['S','M','L'];
+  var newId=Math.max.apply(null,products.map(function(p){return p.id}))+1;
+  products.push({id:newId,name:name,price:price,cat:cat,type:type,badge:badge,sizes:sizes,stock:stock,desc:desc});
+  saveProd();notify(name+' ajouté au catalogue ✓','ok');renderAdmin('prods');renderProducts();
+}
+
+function delProduct(id){
+  products=products.filter(function(p){return p.id!==id});
+  saveProd();notify('Produit supprimé','ok');renderAdmin('prods');renderProducts();
+}
+
+renderProducts();updCart();
+</script>
