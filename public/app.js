@@ -1,8 +1,8 @@
 // app.js — ONEBYONE Paris frontend logic
 
 // ── CONFIG (remplace par tes vraies clés Supabase) ──────────────
-const SUPABASE_URL = 'https://lubioozmkybatxrsilhb.supabase.co';  // ← TON URL SUPABASE
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx1Ymlvb3pta3liYXR4cnNpbGhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1MjMxMDAsImV4cCI6MjA5MzA5OTEwMH0.blOU5P7oZSLMB34jnLAv0eTrU_7M9TJoWUhKTTtCO5k';           // ← TA CLÉ ANON SUPABASE
+const SUPABASE_URL = 'https://XXXXXXXXXX.supabase.co';  // ← TON URL SUPABASE
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJI...';           // ← TA CLÉ ANON SUPABASE
 const API_BASE = '';  // Vercel Functions — même domaine
 // ──────────────────────────────────────────────────────────────────
 
