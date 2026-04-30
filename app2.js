@@ -1,8 +1,9 @@
 // app.js — ONEBYONE Paris frontend logic
 
 // ── CONFIG (remplace par tes vraies clés Supabase) ──────────────
-const SUPABASE_URL = 'https://lubioozmkybatxrsilhb.supabase.co';  // ← TON URL SUPABASE
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx1Ymlvb3pta3liYXR4cnNpbGhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1MjMxMDAsImV4cCI6MjA5MzA5OTEwMH0.blOU5P7oZSLMB34jnLAv0eTrU_7M9TJoWUhKTTtCO5k';           // ← TA CLÉ ANON SUPABASE
+const SUPABASE_URL = 'https://XXXXXXXXXX.supabase.co';  // ← TON URL SUPABASE
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJI...';           // ← TA CLÉ ANON SUPABASE
+const ADMIN_PASSWORD = 'onebyone2025'; // ← CHANGE CE MOT DE PASSE SI TU VEUX
 const API_BASE = '';  // Vercel Functions — même domaine
 // ──────────────────────────────────────────────────────────────────
 
@@ -385,7 +386,13 @@ async function doRegister() {
 }
 
 // ── ADMIN ──────────────────────────────────────────────────────────
-function showAdmin() { document.getElementById('page-shop').style.display='none'; document.getElementById('page-admin').style.display='block'; renderAdmin('dash'); }
+function showAdmin() {
+  const key = prompt('Clé admin :');
+  if (!key || key !== ADMIN_PASSWORD) { notify('Clé admin incorrecte ✕', 'err'); return; }
+  document.getElementById('page-shop').style.display='none';
+  document.getElementById('page-admin').style.display='block';
+  renderAdmin('dash');
+}
 function showShop() { document.getElementById('page-admin').style.display='none'; document.getElementById('page-shop').style.display='block'; }
 
 async function renderAdmin(tab) {
@@ -408,7 +415,7 @@ async function renderAdmin(tab) {
         </table></div>` : '<div style="padding:2rem;color:var(--text3);font-size:13px">Aucune commande.</div>');
 
   } else if (tab === 'prods') {
-    const pRes = await fetch(`${API_BASE}/api/admin/products`, { headers: {'x-admin-key': prompt('Clé admin :')||''} });
+    const pRes = await fetch(`${API_BASE}/api/admin/products`, { headers: {'x-admin-key': ADMIN_PASSWORD} });
     const pData = await pRes.json();
     const prods = pData.products || allProducts;
     c.innerHTML = `<div class="atitle">Produits</div><div class="asub">Gérer le catalogue</div>
@@ -446,8 +453,28 @@ async function renderAdmin(tab) {
   }
 }
 
-function adminAddProduct() {
-  notify('Produit ajouté — connexion Supabase requise en prod','ok');
+async function adminAddProduct() {
+  const name = document.getElementById('np-name').value.trim();
+  const price = document.getElementById('np-price').value;
+  const cat = document.getElementById('np-cat').value;
+  const type = document.getElementById('np-type').value;
+  const stock = document.getElementById('np-stock').value;
+  const badge = document.getElementById('np-badge').value;
+  const sizes = document.getElementById('np-sizes').value.split(',').map(s => s.trim()).filter(Boolean);
+  const desc = document.getElementById('np-desc').value.trim();
+
+  if (!name || !price || !sizes.length) { notify('Remplis au moins le nom, prix et tailles', 'err'); return; }
+
+  const { data, error } = await _supabase.from('products').insert([{
+    name, price: Number(price), category: cat, type, stock: Number(stock)||0,
+    badge: badge||null, sizes, description: desc, active: true
+  }]).select().single();
+
+  if (error) { notify('Erreur : ' + error.message, 'err'); return; }
+
+  notify(name + ' ajouté au catalogue ✓', 'ok');
+  await loadProducts();
+  renderAdmin('prods');
 }
 
 function aTab(tab, el) {
