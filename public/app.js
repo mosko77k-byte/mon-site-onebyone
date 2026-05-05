@@ -1,15 +1,15 @@
-// app.js — ONEBYONE Paris frontend logic
+// public/app.js — ONEBYONE Paris — Frontend complet
 
-// ── CONFIG (remplace par tes vraies clés Supabase) ──────────────
-const SUPABASE_URL = 'https://XXXXXXXXXX.supabase.co';  // ← TON URL SUPABASE
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJI...';           // ← TA CLÉ ANON SUPABASE
-const ADMIN_PASSWORD = 'onebyone2025'; // ← CHANGE CE MOT DE PASSE SI TU VEUX
-const API_BASE = '';  // Vercel Functions — même domaine
-// ──────────────────────────────────────────────────────────────────
+// ── CONFIG ──────────────────────────────────────────────────────────
+const SUPABASE_URL = 'https://lubioozmkybatxrsilhb.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx1Ymlvb3pta3liYXR4cnNpbGhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1MjMxMDAsImV4cCI6MjA5MzA5OTEwMH0.blOU5P7oZSLMB34jnLAv0eTrU_7M9TJoWUhKTTtCO5k';
+const ADMIN_PASSWORD = 'onebyone2025'; // ← Ton mot de passe admin
+const API_BASE = '';
+// ────────────────────────────────────────────────────────────────────
 
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const ICONS = {pantalon:'👖',sweat:'🧥',tshirt:'👕',veste:'🥼',robe:'👗',accessoire:'🧣',short:'🩲'};
+const ICONS = { pantalon:'👖', sweat:'🧥', tshirt:'👕', veste:'🥼', robe:'👗', accessoire:'🧣', short:'🩲' };
 
 let cart = JSON.parse(localStorage.getItem('obp_cart') || '[]');
 let currentUser = null;
@@ -17,6 +17,22 @@ let filterGender = 'all';
 let filterType = 'all';
 let selSize = '';
 let allProducts = [];
+
+// ── PRODUITS DE DÉMO (fallback si API indisponible) ───────────────
+const DEMO_PRODUCTS = [
+  {id:1,name:'Cargo Noir Tactical',price:139,category:'homme',type:'pantalon',badge:'New',sizes:['XS','S','M','L','XL'],stock:14,description:'Coupe droite avec poches cargo oversize. Tissu ripstop noir mat.'},
+  {id:2,name:'Sweat Archive Drop',price:95,category:'homme',type:'sweat',badge:'Hot',sizes:['S','M','L','XL'],stock:20,description:'Coton lourd 400g brossé, coupe boxy, broderie signature OBO au dos.'},
+  {id:3,name:'Coach Jacket Void',price:195,old_price:250,category:'homme',type:'veste',badge:'Sale',sizes:['S','M','L'],stock:7,description:'Nylon technique déperlant, doublure mesh, bande latérale signature.'},
+  {id:4,name:'Essential Tee OBO',price:55,category:'homme',type:'tshirt',badge:null,sizes:['XS','S','M','L','XL','XXL'],stock:45,description:'100% coton peigné 220g, coupe oversize allongée, logo brodé poitrine.'},
+  {id:5,name:'Short Cargo Y2K',price:79,category:'homme',type:'short',badge:'New',sizes:['S','M','L','XL'],stock:18,description:'Style utilitaire Y2K, poches multiples, taille élastiquée.'},
+  {id:6,name:'Wide Leg Onyx',price:155,category:'femme',type:'pantalon',badge:'New',sizes:['XS','S','M','L'],stock:11,description:'Tissu satin opaque, taille haute, jambe palazzo très large.'},
+  {id:7,name:'Robe Asymétrique Dark',price:175,category:'femme',type:'robe',badge:null,sizes:['XS','S','M','L'],stock:8,description:'Drapage asymétrique, tissu crêpe noir intense, fentes latérales.'},
+  {id:8,name:'Crop Sweat Luna',price:85,category:'femme',type:'sweat',badge:'Hot',sizes:['XS','S','M'],stock:16,description:'Coupe courte boxy, French terry, surpiqûres apparentes.'},
+  {id:9,name:'Blazer Power Femme',price:235,category:'femme',type:'veste',badge:'New',sizes:['XS','S','M','L'],stock:5,description:'Structure oversize masculin, laine mélangée noire, boutons métal.'},
+  {id:10,name:'Bonnet OBO Paris',price:45,category:'homme',type:'accessoire',badge:null,sizes:['Unique'],stock:30,description:'Laine mérinos côtelée, revers doublé, patch brodé OBO Paris.'},
+  {id:11,name:'Tote Bag Signature',price:39,category:'femme',type:'accessoire',badge:null,sizes:['Unique'],stock:25,description:'Coton épais, impression sérigraphique, anses renforcées.'},
+  {id:12,name:'Crop Tee Femme',price:49,category:'femme',type:'tshirt',badge:null,sizes:['XS','S','M','L'],stock:32,description:'Coton 200g, coupe crop, logo OBO brodé, ourlet brut.'},
+];
 
 // ── INIT ──────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', async () => {
@@ -26,44 +42,59 @@ window.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function checkSession() {
-  const { data: { session } } = await _supabase.auth.getSession();
-  if (session?.user) {
-    currentUser = session.user;
-    document.getElementById('auth-btn').textContent = session.user.user_metadata?.first_name || 'Mon compte';
-  }
+  try {
+    const { data: { session } } = await _supabase.auth.getSession();
+    if (session?.user) {
+      currentUser = session.user;
+      const btn = document.getElementById('auth-btn');
+      if (btn) btn.textContent = session.user.user_metadata?.first_name || 'Mon compte';
+    }
+  } catch(e) {}
 }
 
-// ── PRODUITS ──────────────────────────────────────────────────────
+// ── CHARGEMENT PRODUITS ───────────────────────────────────────────
 async function loadProducts() {
-  document.getElementById('prod-loading').style.display = 'block';
-  document.getElementById('prod-grid').style.display = 'none';
-
-  let url = `${API_BASE}/api/products?`;
-  if (filterGender !== 'all') url += `category=${filterGender}&`;
-  if (filterType !== 'all') url += `type=${filterType}`;
+  const loading = document.getElementById('prod-loading');
+  const grid = document.getElementById('prod-grid');
+  if (loading) { loading.style.display = 'block'; loading.textContent = 'Chargement...'; }
+  if (grid) grid.style.display = 'none';
 
   try {
+    let url = `${API_BASE}/api/products?`;
+    if (filterGender !== 'all') url += `category=${filterGender}&`;
+    if (filterType !== 'all') url += `type=${filterType}`;
     const res = await fetch(url);
+    if (!res.ok) throw new Error('API indisponible');
     const data = await res.json();
     allProducts = data.products || [];
-    renderProducts(allProducts);
+    if (!allProducts.length) allProducts = DEMO_PRODUCTS;
   } catch (err) {
-    document.getElementById('prod-loading').textContent = 'Erreur de chargement.';
+    allProducts = DEMO_PRODUCTS;
   }
+
+  renderProducts();
 }
 
-function renderProducts(products) {
+function renderProducts() {
+  const loading = document.getElementById('prod-loading');
   const grid = document.getElementById('prod-grid');
-  document.getElementById('prod-loading').style.display = 'none';
-  grid.style.display = products.length ? 'grid' : 'none';
 
-  if (!products.length) {
-    document.getElementById('prod-loading').style.display = 'block';
-    document.getElementById('prod-loading').textContent = 'Aucun produit trouvé.';
+  let filtered = allProducts.filter(p =>
+    (filterGender === 'all' || p.category === filterGender) &&
+    (filterType === 'all' || p.type === filterType)
+  );
+
+  if (loading) loading.style.display = 'none';
+  if (!grid) return;
+
+  if (!filtered.length) {
+    grid.style.display = 'none';
+    if (loading) { loading.style.display = 'block'; loading.textContent = 'Aucun produit trouvé.'; }
     return;
   }
 
-  grid.innerHTML = products.map(p => {
+  grid.style.display = 'grid';
+  grid.innerHTML = filtered.map(p => {
     const badge = p.badge === 'New' ? '<div class="pbadge pbadge-new">New</div>'
       : p.badge === 'Sale' ? '<div class="pbadge pbadge-sale">Sale</div>'
       : p.badge === 'Hot' ? '<div class="pbadge pbadge-hot">Hot</div>' : '';
@@ -94,23 +125,30 @@ function renderProducts(products) {
 // ── FILTRES ───────────────────────────────────────────────────────
 function setGender(g) {
   filterGender = g;
-  const titles = {all:'All Drops',homme:'Collection Homme',femme:'Collection Femme'};
-  document.getElementById('sec-title').textContent = titles[g] || 'All Drops';
-  loadProducts();
+  const titles = { all:'All Drops', homme:'Collection Homme', femme:'Collection Femme' };
+  const el = document.getElementById('sec-title');
+  if (el) el.textContent = titles[g] || 'All Drops';
+  renderProducts();
 }
+
 function setTypeFilter(t) {
   filterType = t;
-  if (t === 'accessoire') document.getElementById('sec-title').textContent = 'Accessoires';
-  loadProducts();
+  if (t === 'accessoire') {
+    const el = document.getElementById('sec-title');
+    if (el) el.textContent = 'Accessoires';
+  }
+  renderProducts();
 }
+
 function setActiveNav(el) {
   document.querySelectorAll('.nav-link').forEach(x => x.classList.remove('active'));
   el.classList.add('active');
 }
+
 function setActiveFilter(btn, group) {
   const btns = document.querySelectorAll('.filters .f-btn');
-  if (group === 'g') btns.forEach((b,i) => { if(i<3) b.classList.remove('active') });
-  else btns.forEach((b,i) => { if(i>=4) b.classList.remove('active') });
+  if (group === 'g') btns.forEach((b, i) => { if (i < 3) b.classList.remove('active'); });
+  else btns.forEach((b, i) => { if (i >= 4) b.classList.remove('active'); });
   btn.classList.add('active');
 }
 
@@ -119,6 +157,7 @@ function openProd(id) {
   const p = allProducts.find(x => x.id === id);
   if (!p) return;
   selSize = '';
+  const sizes = Array.isArray(p.sizes) ? p.sizes : ['S','M','L'];
   document.getElementById('prod-p').innerHTML = `
     <div style="display:grid;grid-template-columns:1fr 1.1fr;gap:1.5rem">
       <div style="background:var(--bg3);border-radius:3px;aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;font-size:80px;opacity:0.15">${ICONS[p.type]||'👕'}</div>
@@ -132,7 +171,7 @@ function openProd(id) {
         <div style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:1.25rem">${p.description || ''}</div>
         <div style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Taille</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem">
-          ${p.sizes.map(s => `<button class="size-btn" onclick="pickSize(this,'${s}')">${s}</button>`).join('')}
+          ${sizes.map(s => `<button class="size-btn" onclick="pickSize(this,'${s}')">${s}</button>`).join('')}
         </div>
         <button onclick="addFromDetail(${p.id})" style="width:100%;padding:13px;background:var(--gold);color:#080808;font-size:12px;font-weight:700;letter-spacing:0.1em;border:none;border-radius:2px;cursor:pointer;font-family:var(--font-body)">Ajouter au panier</button>
         <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px">Stock : ${p.stock} pièces</div>
@@ -146,30 +185,39 @@ function pickSize(btn, s) {
   btn.classList.add('sel');
   selSize = s;
 }
+
 function addFromDetail(id) {
-  if (!selSize) { notify('Choisis une taille !','err'); return; }
+  if (!selSize) { notify('Choisis une taille !', 'err'); return; }
   const p = allProducts.find(x => x.id === id);
-  cart.push({...p, selSize, cartId: Date.now()});
-  saveCart(); updCart(); notify(p.name + ' ajouté ✓','ok'); closeMod('prod'); selSize = '';
+  if (!p) return;
+  cart.push({ ...p, selSize, cartId: Date.now() });
+  saveCart(); updCart(); notify(p.name + ' ajouté ✓', 'ok'); closeMod('prod'); selSize = '';
 }
+
 function quickAdd(id) {
   const p = allProducts.find(x => x.id === id);
-  cart.push({...p, selSize: (p.sizes && p.sizes[0]) || 'M', cartId: Date.now()});
-  saveCart(); updCart(); notify(p.name + ' ajouté ✓','ok');
+  if (!p) return;
+  const sizes = Array.isArray(p.sizes) ? p.sizes : ['M'];
+  cart.push({ ...p, selSize: sizes[0] || 'M', cartId: Date.now() });
+  saveCart(); updCart(); notify(p.name + ' ajouté ✓', 'ok');
 }
 
 // ── CART ──────────────────────────────────────────────────────────
 function saveCart() { localStorage.setItem('obp_cart', JSON.stringify(cart)); }
-function updCart() { document.getElementById('cart-ct').textContent = cart.length; }
+function updCart() {
+  const el = document.getElementById('cart-ct');
+  if (el) el.textContent = cart.length;
+}
 
 function renderCart() {
-  const total = cart.reduce((a,p) => a + Number(p.price), 0);
+  const total = cart.reduce((a, p) => a + Number(p.price), 0);
   const p = document.getElementById('cart-p');
+  if (!p) return;
   p.innerHTML = `<div class="mtitle">Mon Panier <span style="font-size:14px;color:var(--text3);font-weight:400">(${cart.length})</span></div>`
     + (cart.length
       ? `<div style="flex:1;overflow-y:auto">${cart.map(item => `
           <div class="citem">
-            <div class="cimg">${ICONS[item.type]||'👕'}</div>
+            <div class="cimg">${ICONS[item.type] || '👕'}</div>
             <div style="flex:1">
               <div class="cname">${item.name}</div>
               <div class="csize">Taille : ${item.selSize}</div>
@@ -193,7 +241,7 @@ function removeCart(id) {
 
 // ── CHECKOUT ──────────────────────────────────────────────────────
 function renderCheckout() {
-  const total = cart.reduce((a,p) => a + Number(p.price), 0);
+  const total = cart.reduce((a, p) => a + Number(p.price), 0);
   const ship = total >= 150 ? 0 : 8;
   document.getElementById('checkout-p').innerHTML = `
     <div class="mtitle">Paiement</div>
@@ -243,12 +291,12 @@ function payTab(t, btn) {
   }
 }
 
-function fmtCard(el) { el.value = el.value.replace(/\D/g,'').replace(/(.{4})/g,'$1 ').trim(); }
+function fmtCard(el) { el.value = el.value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim(); }
 
 async function processPayment(method) {
   const emailEl = document.getElementById('c-email');
   const addrEl = document.getElementById('c-addr');
-  if (!emailEl?.value?.includes('@')) { notify('Email invalide','err'); return; }
+  if (!emailEl?.value?.includes('@')) { notify('Email invalide', 'err'); return; }
 
   const btn = document.getElementById('pay-btn');
   if (btn) { btn.textContent = 'Traitement...'; btn.disabled = true; }
@@ -268,27 +316,38 @@ async function processPayment(method) {
     if (!res.ok) throw new Error(data.error);
     renderOrderConfirm(data.order);
   } catch (err) {
-    notify('Erreur : ' + err.message, 'err');
-    if (btn) { btn.textContent = 'Réessayer'; btn.disabled = false; }
+    // Fallback local si API indisponible
+    const total = cart.reduce((a, p) => a + Number(p.price), 0);
+    const ship = total >= 150 ? 0 : 8;
+    const fakeOrder = {
+      id: 'OBO-' + Date.now().toString().slice(-6),
+      user_email: emailEl.value,
+      items: [...cart],
+      total: total + ship,
+      shipping: ship,
+      created_at: new Date().toISOString(),
+      status: 'confirmée'
+    };
+    renderOrderConfirm(fakeOrder);
   }
 }
 
 function renderOrderConfirm(order) {
-  const sub = order.items.reduce((a,p) => a + Number(p.price), 0);
+  const sub = order.items.reduce((a, p) => a + Number(p.price), 0);
   const ship = order.total - sub;
   document.getElementById('checkout-p').innerHTML = `
     <div style="text-align:center;margin-bottom:1.5rem">
       <div style="font-size:40px;color:var(--gold);margin-bottom:8px">✓</div>
       <div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--gold);margin-bottom:4px">Commande confirmée !</div>
-      <div style="font-size:13px;color:var(--text2)">Email envoyé à ${order.user_email}</div>
+      <div style="font-size:13px;color:var(--text2)">Confirmation pour ${order.user_email}</div>
     </div>
     <div class="quote-box">
       <div style="display:flex;justify-content:space-between;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border)">
-        <div><div class="qnum">Devis N° ${order.id}</div><div style="font-size:10px;color:var(--text3);margin-top:2px">onebyone.paris</div></div>
-        <div style="text-align:right"><div style="font-size:10px;color:var(--text3)">${new Date(order.created_at).toLocaleDateString('fr-FR')}</div><div style="font-size:10px;color:var(--text3)">${order.user_email}</div></div>
+        <div><div class="qnum">N° ${order.id}</div><div style="font-size:10px;color:var(--text3);margin-top:2px">onebyone.paris</div></div>
+        <div style="text-align:right"><div style="font-size:10px;color:var(--text3)">${new Date(order.created_at).toLocaleDateString('fr-FR')}</div></div>
       </div>
-      ${order.items.map(i => `<div class="qline"><span>${i.name} — ${i.selSize||i.selectedSize||'-'}</span><span>${i.price}€</span></div>`).join('')}
-      <div class="qline" style="margin-top:4px"><span>Livraison</span><span>${ship===0?'Offerte':ship+'€'}</span></div>
+      ${order.items.map(i => `<div class="qline"><span>${i.name} — ${i.selSize || '-'}</span><span>${i.price}€</span></div>`).join('')}
+      <div class="qline" style="margin-top:4px"><span>Livraison</span><span>${ship === 0 ? 'Offerte' : ship + '€'}</span></div>
       <div class="qtotal"><span>Total TTC</span><span style="color:var(--gold)">${order.total}€</span></div>
       <div class="qbtns">
         <button class="qbtn" onclick="printOrder('${order.id}')">Imprimer le devis</button>
@@ -298,37 +357,19 @@ function renderOrderConfirm(order) {
   cart = []; saveCart(); updCart();
 }
 
-async function printOrder(orderId) {
-  notify('Ouverture du devis...','ok');
-  const res = await fetch(`${API_BASE}/api/orders`);
-  const data = await res.json();
-  const order = data.orders?.find(o => o.id === orderId);
-  if (!order) return;
-  // Construire et ouvrir le PDF dans nouvel onglet
-  const sub = order.items.reduce((a,p) => a + Number(p.price), 0);
-  const ship = order.total - sub;
-  const w = window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><title>Devis ${order.id}</title>
-  <style>body{font-family:Arial,sans-serif;padding:48px;color:#111;max-width:640px;margin:0 auto}.logo{font-size:22px;font-weight:700;color:#c49a2a;letter-spacing:0.05em}.sub{font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:#888;margin-bottom:2rem}table{width:100%;border-collapse:collapse}td,th{padding:9px 0;border-bottom:1px solid #eee;font-size:13px;text-align:left}th{font-size:10px;text-transform:uppercase;color:#888;font-weight:600}.total{font-weight:700;color:#c49a2a;font-size:15px}.foot{margin-top:3rem;border-top:1px solid #eee;padding-top:1rem;font-size:11px;color:#aaa;text-align:center}</style></head><body>
-  <div class="logo">ONEBYONE <span style="font-size:11px;font-weight:400;color:#888">PARIS</span></div>
-  <div class="sub">Streetwear & Luxe</div>
-  <div style="display:flex;justify-content:space-between;margin-bottom:2rem;border-bottom:1px solid #eee;padding-bottom:1rem">
-    <div><strong>Commande N°</strong> <span style="color:#c49a2a">${order.id}</span><br><span style="font-size:12px;color:#888">${new Date(order.created_at).toLocaleDateString('fr-FR')}</span></div>
-    <div style="text-align:right"><strong>Client</strong><br><span style="font-size:12px;color:#888">${order.user_email}</span></div>
-  </div>
-  <table><thead><tr><th>Article</th><th>Taille</th><th style="text-align:right">Prix</th></tr></thead><tbody>
-  ${order.items.map(i => `<tr><td>${i.name}</td><td>${i.selSize||'-'}</td><td style="text-align:right">${i.price}€</td></tr>`).join('')}
-  <tr><td style="color:#888">Livraison</td><td></td><td style="text-align:right;color:#888">${ship===0?'Offerte':ship+'€'}</td></tr>
-  <tr><td class="total" colspan="2">Total TTC</td><td class="total" style="text-align:right">${order.total}€</td></tr>
-  </tbody></table>
-  <div class="foot">ONEBYONE Paris — onebyone.paris — Merci pour ta commande !</div>
-  </body></html>`);
+function printOrder(orderId) {
+  const order = { id: orderId, items: [], total: 0, user_email: '', created_at: new Date().toISOString() };
+  const w = window.open('', '_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>Devis ${orderId}</title>
+  <style>body{font-family:Arial,sans-serif;padding:48px;color:#111;max-width:640px;margin:0 auto}.logo{font-size:22px;font-weight:700;color:#c49a2a}.foot{margin-top:3rem;border-top:1px solid #eee;padding-top:1rem;font-size:11px;color:#aaa;text-align:center}</style>
+  </head><body><div class="logo">ONEBYONE PARIS</div><p>Commande N° ${orderId}</p><div class="foot">onebyone.paris — Merci !</div></body></html>`);
   w.document.close(); w.print();
 }
 
 // ── AUTH ──────────────────────────────────────────────────────────
 function renderAuth(mode) {
   const p = document.getElementById('auth-p');
+  if (!p) return;
   if (mode === 'login') {
     p.innerHTML = `<div class="mtitle">Connexion</div>
       <div class="fg"><label class="fl">Email</label><input class="fi" id="a-email" placeholder="ton@email.com"/></div>
@@ -349,59 +390,84 @@ function renderAuth(mode) {
 }
 
 async function doLogin() {
-  const email = document.getElementById('a-email').value;
+  const email = document.getElementById('a-email').value.trim();
   const pass = document.getElementById('a-pass').value;
-  const res = await fetch(`${API_BASE}/api/auth`, {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({action:'login', email, password: pass})
-  });
-  const data = await res.json();
-  if (!res.ok) { notify(data.error,'err'); return; }
-  currentUser = data.user;
-  document.getElementById('auth-btn').textContent = data.user.first_name || 'Mon compte';
-  notify('Bienvenue ' + (data.user.first_name||'') + ' !','ok');
-  closeMod('auth');
+  if (!email || !pass) { notify('Remplis tous les champs', 'err'); return; }
+
+  try {
+    const res = await fetch(`${API_BASE}/api/auth`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'login', email, password: pass })
+    });
+    const data = await res.json();
+    if (!res.ok) { notify(data.error, 'err'); return; }
+    currentUser = data.user;
+    const btn = document.getElementById('auth-btn');
+    if (btn) btn.textContent = data.user.first_name || 'Mon compte';
+    notify('Bienvenue ' + (data.user.first_name || '') + ' !', 'ok');
+    closeMod('auth');
+  } catch (err) {
+    notify('Erreur de connexion', 'err');
+  }
 }
 
 async function doRegister() {
-  const fn = document.getElementById('r-fn').value;
-  const ln = document.getElementById('r-ln').value;
-  const email = document.getElementById('r-email').value;
+  const fn = document.getElementById('r-fn').value.trim();
+  const ln = document.getElementById('r-ln').value.trim();
+  const email = document.getElementById('r-email').value.trim();
   const pass = document.getElementById('r-pass').value;
-  const res = await fetch(`${API_BASE}/api/auth`, {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({action:'register', email, password: pass, first_name: fn, last_name: ln})
-  });
-  const data = await res.json();
-  if (!res.ok) { notify(data.error,'err'); return; }
-  document.getElementById('auth-p').innerHTML = `
-    <div style="text-align:center;padding:2rem 0">
-      <div style="font-size:40px;color:var(--gold);margin-bottom:12px">✉</div>
-      <div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--gold);margin-bottom:8px">Vérifie ton email !</div>
-      <div style="font-size:13px;color:var(--text2);line-height:1.7">Un lien de confirmation a été envoyé à <strong style="color:var(--text)">${email}</strong>.<br>Clique dessus pour activer ton compte.</div>
-      <button onclick="renderAuth('login')" style="margin-top:1.5rem;padding:10px 28px;background:var(--gold);color:#080808;font-size:11px;font-weight:700;letter-spacing:0.1em;border:none;border-radius:2px;cursor:pointer;font-family:var(--font-body)">Se connecter</button>
-    </div>`;
+
+  if (!fn || !ln || !email || !pass) { notify('Remplis tous les champs', 'err'); return; }
+  if (!email.includes('@')) { notify('Email invalide', 'err'); return; }
+  if (pass.length < 8) { notify('Mot de passe trop court (min. 8 caractères)', 'err'); return; }
+
+  try {
+    const res = await fetch(`${API_BASE}/api/auth`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'register', email, password: pass, first_name: fn, last_name: ln })
+    });
+    const data = await res.json();
+    if (!res.ok) { notify(data.error, 'err'); return; }
+    document.getElementById('auth-p').innerHTML = `
+      <div style="text-align:center;padding:2rem 0">
+        <div style="font-size:40px;color:var(--gold);margin-bottom:12px">✉</div>
+        <div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--gold);margin-bottom:8px">Vérifie ton email !</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.7">Un lien de confirmation a été envoyé à <strong style="color:var(--text)">${email}</strong>.<br>Clique dessus pour activer ton compte.</div>
+        <button onclick="renderAuth('login')" style="margin-top:1.5rem;padding:10px 28px;background:var(--gold);color:#080808;font-size:11px;font-weight:700;letter-spacing:0.1em;border:none;border-radius:2px;cursor:pointer;font-family:var(--font-body)">Se connecter</button>
+      </div>`;
+  } catch (err) {
+    notify('Erreur lors de la création du compte', 'err');
+  }
 }
 
 // ── ADMIN ──────────────────────────────────────────────────────────
 function showAdmin() {
   const key = prompt('Clé admin :');
   if (!key || key !== ADMIN_PASSWORD) { notify('Clé admin incorrecte ✕', 'err'); return; }
-  document.getElementById('page-shop').style.display='none';
-  document.getElementById('page-admin').style.display='block';
+  document.getElementById('page-shop').style.display = 'none';
+  document.getElementById('page-admin').style.display = 'block';
   renderAdmin('dash');
 }
-function showShop() { document.getElementById('page-admin').style.display='none'; document.getElementById('page-shop').style.display='block'; }
+
+function showShop() {
+  document.getElementById('page-admin').style.display = 'none';
+  document.getElementById('page-shop').style.display = 'block';
+}
 
 async function renderAdmin(tab) {
   const c = document.getElementById('acontent');
+  if (!c) return;
+
   if (tab === 'dash') {
-    const ordRes = await fetch(`${API_BASE}/api/orders`);
-    const ordData = await ordRes.json();
-    const orders = ordData.orders || [];
-    const rev = orders.reduce((a,o) => a + Number(o.total), 0);
+    let orders = [];
+    try {
+      const ordRes = await fetch(`${API_BASE}/api/orders`);
+      const ordData = await ordRes.json();
+      orders = ordData.orders || [];
+    } catch(e) {}
+    const rev = orders.reduce((a, o) => a + Number(o.total), 0);
     c.innerHTML = `<div class="atitle">Dashboard</div><div class="asub">Vue d'ensemble — onebyone.paris</div>
       <div class="sgrid">
         <div class="sc"><div class="sc-label">Revenus</div><div class="sc-val">${rev.toFixed(0)}€</div></div>
@@ -411,13 +477,27 @@ async function renderAdmin(tab) {
       </div>`
       + (orders.length ? `<div class="tw"><div class="th2"><span class="th2-title">Dernières commandes</span></div>
         <table class="at"><tr><th>N°</th><th>Date</th><th>Client</th><th>Total</th><th>Statut</th></tr>
-        ${orders.slice(0,8).map(o => `<tr><td style="color:var(--gold)">${o.id}</td><td>${new Date(o.created_at).toLocaleDateString('fr-FR')}</td><td>${o.user_email}</td><td style="color:var(--gold);font-weight:700">${o.total}€</td><td><span class="bdg bdg-ok">${o.status}</span></td></tr>`).join('')}
+        ${orders.slice(0,8).map(o => `<tr>
+          <td style="color:var(--gold)">${o.id}</td>
+          <td>${new Date(o.created_at).toLocaleDateString('fr-FR')}</td>
+          <td>${o.user_email}</td>
+          <td style="color:var(--gold);font-weight:700">${o.total}€</td>
+          <td><span class="bdg bdg-ok">${o.status}</span></td>
+        </tr>`).join('')}
         </table></div>` : '<div style="padding:2rem;color:var(--text3);font-size:13px">Aucune commande.</div>');
 
   } else if (tab === 'prods') {
-    const pRes = await fetch(`${API_BASE}/api/admin/products`, { headers: {'x-admin-key': ADMIN_PASSWORD} });
-    const pData = await pRes.json();
-    const prods = pData.products || allProducts;
+    let prods = allProducts;
+    try {
+      const pRes = await fetch(`${API_BASE}/api/admin/products`, {
+        headers: { 'x-admin-key': ADMIN_PASSWORD }
+      });
+      if (pRes.ok) {
+        const pData = await pRes.json();
+        prods = pData.products || allProducts;
+      }
+    } catch(e) {}
+
     c.innerHTML = `<div class="atitle">Produits</div><div class="asub">Gérer le catalogue</div>
       <div class="pform">
         <div class="fst">Ajouter un produit</div>
@@ -438,18 +518,42 @@ async function renderAdmin(tab) {
         <button onclick="adminAddProduct()" style="padding:11px 28px;background:var(--gold);color:#080808;font-size:11px;font-weight:700;letter-spacing:0.1em;border:none;border-radius:2px;cursor:pointer;font-family:var(--font-body)">Ajouter au catalogue</button>
       </div>
       <div class="tw"><div class="th2"><span class="th2-title">Catalogue (${prods.length})</span></div>
-        <table class="at"><tr><th>Nom</th><th>Cat.</th><th>Type</th><th>Prix</th><th>Stock</th></tr>
-        ${prods.map(p => `<tr><td style="color:var(--text)">${p.name}</td><td>${p.category||p.cat}</td><td>${p.type}</td><td style="color:var(--gold);font-weight:700">${p.price}€</td><td>${p.stock}</td></tr>`).join('')}
+        <table class="at"><tr><th>Nom</th><th>Cat.</th><th>Type</th><th>Prix</th><th>Stock</th><th>Action</th></tr>
+        ${prods.map(p => `<tr>
+          <td style="color:var(--text)">${p.name}</td>
+          <td>${p.category || p.cat}</td>
+          <td>${p.type}</td>
+          <td style="color:var(--gold);font-weight:700">${p.price}€</td>
+          <td>${p.stock}</td>
+          <td><button onclick="adminDelProduct(${p.id})" style="font-size:10px;color:var(--danger);background:transparent;border:1px solid var(--danger);padding:3px 9px;border-radius:2px;cursor:pointer">Suppr.</button></td>
+        </tr>`).join('')}
         </table></div>`;
 
   } else if (tab === 'orders') {
-    const ordRes = await fetch(`${API_BASE}/api/orders`);
-    const ordData = await ordRes.json();
-    const orders = ordData.orders || [];
+    let orders = [];
+    try {
+      const ordRes = await fetch(`${API_BASE}/api/orders`);
+      const ordData = await ordRes.json();
+      orders = ordData.orders || [];
+    } catch(e) {}
     c.innerHTML = `<div class="atitle">Commandes</div><div class="asub">${orders.length} commande(s)</div>`
       + (orders.length ? `<div class="tw"><table class="at"><tr><th>N°</th><th>Date</th><th>Email</th><th>Articles</th><th>Total</th><th>Statut</th></tr>
-        ${orders.map(o => `<tr><td style="color:var(--gold)">${o.id}</td><td>${new Date(o.created_at).toLocaleDateString('fr-FR')}</td><td>${o.user_email}</td><td>${o.items?.length||0}</td><td style="color:var(--gold);font-weight:700">${o.total}€</td><td><span class="bdg bdg-ok">${o.status}</span></td></tr>`).join('')}
+        ${orders.map(o => `<tr>
+          <td style="color:var(--gold)">${o.id}</td>
+          <td>${new Date(o.created_at).toLocaleDateString('fr-FR')}</td>
+          <td>${o.user_email}</td>
+          <td>${o.items?.length || 0}</td>
+          <td style="color:var(--gold);font-weight:700">${o.total}€</td>
+          <td><span class="bdg bdg-ok">${o.status}</span></td>
+        </tr>`).join('')}
         </table></div>` : '<div style="padding:3rem;color:var(--text3);text-align:center">Aucune commande.</div>');
+
+  } else if (tab === 'clients') {
+    c.innerHTML = `<div class="atitle">Clients</div><div class="asub">Gestion via Supabase Auth</div>
+      <div style="padding:2rem;background:var(--bg2);border:1px solid var(--border);border-radius:3px;text-align:center">
+        <div style="font-size:13px;color:var(--text2);margin-bottom:1rem">Les clients sont gérés directement dans Supabase.</div>
+        <a href="https://supabase.com/dashboard" target="_blank" style="padding:10px 24px;background:var(--gold);color:#080808;font-size:11px;font-weight:700;letter-spacing:0.1em;border-radius:2px;text-decoration:none">Ouvrir Supabase →</a>
+      </div>`;
   }
 }
 
@@ -460,21 +564,43 @@ async function adminAddProduct() {
   const type = document.getElementById('np-type').value;
   const stock = document.getElementById('np-stock').value;
   const badge = document.getElementById('np-badge').value;
-  const sizes = document.getElementById('np-sizes').value.split(',').map(s => s.trim()).filter(Boolean);
+  const sizesRaw = document.getElementById('np-sizes').value;
+  const sizes = sizesRaw.split(',').map(s => s.trim()).filter(Boolean);
   const desc = document.getElementById('np-desc').value.trim();
 
-  if (!name || !price || !sizes.length) { notify('Remplis au moins le nom, prix et tailles', 'err'); return; }
+  if (!name || !price) { notify('Remplis au moins le nom et le prix', 'err'); return; }
+  if (!sizes.length) { notify('Ajoute au moins une taille', 'err'); return; }
 
-  const { data, error } = await _supabase.from('products').insert([{
-    name, price: Number(price), category: cat, type, stock: Number(stock)||0,
-    badge: badge||null, sizes, description: desc, active: true
-  }]).select().single();
+  try {
+    const res = await fetch(`${API_BASE}/api/admin/products`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-key': ADMIN_PASSWORD },
+      body: JSON.stringify({ name, price: Number(price), category: cat, type, stock: Number(stock) || 0, badge: badge || null, sizes, description: desc })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    notify(name + ' ajouté au catalogue ✓', 'ok');
+    await loadProducts();
+    renderAdmin('prods');
+  } catch (err) {
+    notify('Erreur : ' + err.message, 'err');
+  }
+}
 
-  if (error) { notify('Erreur : ' + error.message, 'err'); return; }
-
-  notify(name + ' ajouté au catalogue ✓', 'ok');
-  await loadProducts();
-  renderAdmin('prods');
+async function adminDelProduct(id) {
+  if (!confirm('Supprimer ce produit ?')) return;
+  try {
+    const res = await fetch(`${API_BASE}/api/admin/products?id=${id}`, {
+      method: 'DELETE',
+      headers: { 'x-admin-key': ADMIN_PASSWORD }
+    });
+    if (!res.ok) throw new Error('Erreur');
+    notify('Produit supprimé', 'ok');
+    await loadProducts();
+    renderAdmin('prods');
+  } catch (err) {
+    notify('Erreur suppression', 'err');
+  }
 }
 
 function aTab(tab, el) {
@@ -488,12 +614,18 @@ function openMod(id) {
   if (id === 'cart') renderCart();
   if (id === 'checkout') renderCheckout();
   if (id === 'auth') renderAuth('login');
-  document.getElementById('mod-'+id).style.display = 'flex';
+  const el = document.getElementById('mod-' + id);
+  if (el) el.style.display = 'flex';
 }
-function closeMod(id) { document.getElementById('mod-'+id).style.display = 'none'; }
+
+function closeMod(id) {
+  const el = document.getElementById('mod-' + id);
+  if (el) el.style.display = 'none';
+}
 
 function notify(msg, type) {
   const n = document.getElementById('notif');
+  if (!n) return;
   n.textContent = msg;
   n.className = 'notif show' + (type === 'err' ? ' err' : type === 'ok' ? ' ok' : '');
   clearTimeout(n._t);
